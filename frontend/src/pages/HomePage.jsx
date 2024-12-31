@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import Sidebar from "../components/Sidebar";
 import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
+import { useGroupStore } from "../store/useGroupStore";
 
 const HomePage = () => {
   const {
@@ -14,6 +15,16 @@ const HomePage = () => {
     getUsers,
     getMessages,
   } = useChatStore();
+
+  const { selectedGroup } = useGroupStore();
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    if (selectedGroup) {
+      setData(selectedGroup);
+    } else {
+      setData(selectedUser);
+    }
+  }, [selectedGroup, selectedUser]);
   return (
     <div className="h-screen bg-base-200">
       <div className="flex items-center justify-center pt-20 px-4">
@@ -21,7 +32,7 @@ const HomePage = () => {
           <div className="flex h-full rounded-lg overflow-hidden">
             <Sidebar />
 
-            {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
+            {!data ? <NoChatSelected /> : <ChatContainer />}
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useChatStore } from "../store/useChatStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
+import { useGroupStore } from "../store/useGroupStore";
 
 const Sidebar = () => {
   const { users, getUsers, selectedUser, setSelectedUser, isUserLoading } =
@@ -11,15 +12,26 @@ const Sidebar = () => {
   const { onlineUsers } = useAuthStore();
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
 
+  // fetch group data
+  const {
+    groups,
+    getMyGroups,
+    isGroupsLoading,
+    selectedGroup,
+    setSelectedGroup,
+  } = useGroupStore();
+
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+    // fetch group data
+    getMyGroups();
+  }, [getUsers, getMyGroups]);
 
   const filteredUsers = showOnlineOnly
     ? users.filter((user) => onlineUsers.includes(user._id))
     : users;
 
-  if (isUserLoading) {
+  if (isUserLoading || isGroupsLoading) {
     return <SidebarSkeleton />;
   }
   return (
@@ -49,7 +61,10 @@ const Sidebar = () => {
         {filteredUsers.map((user) => (
           <button
             key={user._id}
-            onClick={() => setSelectedUser(user)}
+            onClick={() => {
+              setSelectedUser(user);
+              setSelectedGroup(null);
+            }}
             className={`
                   w-full p-3 flex items-center gap-3
                   hover:bg-base-300 transition-colors
@@ -87,6 +102,53 @@ const Sidebar = () => {
         {filteredUsers.length === 0 && (
           <div className="text-center text-zinc-500 py-4">No online users</div>
         )}
+
+        {/* Group list */}
+        {groups.map((group) => (
+          <button
+            key={group._id}
+            onClick={() => {
+              setSelectedGroup(group);
+              setSelectedUser(null);
+              console.log("group", group);
+            }}
+            className={`
+                  w-full p-3 flex items-center gap-3
+                  hover:bg-base-300 transition-colors
+                  ${
+                    selectedGroup?._id === group._id
+                      ? "bg-base-300 ring-1 ring-base-300"
+                      : ""
+                  }
+                `}
+          >
+            <div className="relative mx-auto lg:mx-0">
+              <img
+                src={group.avatar || "/group.png"}
+                alt={group.name}
+                className="size-12 object-cover rounded-full"
+              />
+              {/* {onlineUsers.includes(user._id) && (
+                <span
+                  className="absolute bottom-0 right-0 size-3 bg-green-500 
+                      rounded-full ring-2 ring-zinc-900"
+                />
+              )} */}
+            </div>
+
+            {/* User info - only visible on larger screens */}
+            <div className="hidden lg:block text-left min-w-0">
+              <div className="font-medium truncate">
+                {group.name.length > 10
+                  ? `${group.name.substring(0, 10)}...`
+                  : group.name}
+              </div>
+              {/* <div className="text-sm text-zinc-400">
+                {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+              </div> */}
+            </div>
+          </button>
+        ))}
       </div>
     </aside>
   );

@@ -7,6 +7,7 @@ import messageRoutes from "./routes/message.route.js";
 import cors from "cors";
 import { server, app } from "./lib/socket.js";
 import path from "path";
+import groupRoutes from "./routes/group.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT;
@@ -18,6 +19,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/groups", groupRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
