@@ -15,6 +15,25 @@ export const getMyGroups = async (req, res) => {
   }
 };
 
+export const getGroupById = async (req, res) => {
+  try {
+    const { id: groupId } = req.params;
+    const group = await Group.findById(groupId)
+      .populate({
+        path: "members",
+        select: "_id fullName profilePic",
+      })
+      .populate({
+        path: "admin",
+        select: "_id fullName profilePic",
+      });
+    res.status(200).json(group);
+  } catch (error) {
+    console.error("Error in getGroupById " + error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 export const getMessagesInGroup = async (req, res) => {
   try {
     const { id: groupId } = req.params;
@@ -63,7 +82,7 @@ export const createGroup = async (req, res) => {
       name,
       avatar,
       admin,
-      members: [member],
+      members: Array.from(new Set([admin, ...(member ? [member] : [])])),
     });
     await newGroup.save();
     res.status(201).json(newGroup);

@@ -18,6 +18,7 @@ const Sidebar = () => {
     getMyGroups,
     isGroupsLoading,
     selectedGroup,
+    getGroupById,
     setSelectedGroup,
   } = useGroupStore();
 
@@ -108,7 +109,8 @@ const Sidebar = () => {
           <button
             key={group._id}
             onClick={() => {
-              setSelectedGroup(group);
+              // setSelectedGroup(group);
+              getGroupById(group?._id);
               setSelectedUser(null);
               console.log("group", group);
             }}

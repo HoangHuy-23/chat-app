@@ -164,7 +164,9 @@ const ChatContainer = () => {
                       src={
                         message.senderId === authUser._id
                           ? authUser?.profilePic || "/avatar.png"
-                          : selectedUser?.profilePic || "/avatar.png"
+                          : selectedGroup?.members.find(
+                              (member) => member._id === message.senderId
+                            )?.profilePic || "/avatar.png"
                       }
                       alt="profile pic"
                     />
@@ -172,7 +174,12 @@ const ChatContainer = () => {
                 </div>
                 <div className="chat-header mb-1">
                   <time className="text-xs opacity-50 ml-1">
-                    {formatMessageTime(message.createdAt)} - {message.senderId}
+                    {formatMessageTime(message.createdAt)} -{" "}
+                    {
+                      selectedGroup?.members.find(
+                        (member) => member._id === message.senderId
+                      )?.fullName
+                    }
                   </time>
                 </div>
                 <div className="chat-bubble flex flex-col">

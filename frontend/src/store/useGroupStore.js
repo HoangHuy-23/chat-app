@@ -24,10 +24,31 @@ export const useGroupStore = create((set, get) => ({
     }
   },
 
+  getGroupById: async (groupId) => {
+    set({ isGroupsLoading: true });
+    try {
+      const res = await axiosInstance.get(`/groups/${groupId}`);
+      const { members, admin } = res.data;
+      set({
+        selectedGroup: res.data,
+        members: [...members, admin],
+        admin,
+      });
+      set({ members: [...members, admin] });
+    } catch (error) {
+      toast.error(
+        "Error in getGroupById: " + error.response?.data?.message ||
+          error.message
+      );
+    } finally {
+      set({ isGroupsLoading: false });
+    }
+  },
+
   getGroupMessages: async (groupId) => {
     set({ isMessagesLoading: true });
     try {
-      const res = await axiosInstance.get(`/groups/${groupId}`);
+      const res = await axiosInstance.get(`/groups/${groupId}/messages`);
       set({ groupMessages: res.data });
     } catch (error) {
       toast.error(error.response.data.message);

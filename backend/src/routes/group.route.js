@@ -5,6 +5,7 @@ import {
   addMemberToGroup,
   createGroup,
   deleteGroup,
+  getGroupById,
   getMessagesInGroup,
   getMyGroups,
   sendMessageInGroup,
@@ -13,7 +14,8 @@ import {
 const router = express.Router();
 
 router.get("/my-groups", protectRoute, getMyGroups);
-router.get("/:id", protectRoute, getMessagesInGroup);
+router.get("/:id", protectRoute, getGroupById);
+router.get("/:id/messages", protectRoute, getMessagesInGroup);
 
 router.post("/send/:id", protectRoute, sendMessageInGroup);
 router.post("/create", protectRoute, createGroup);
